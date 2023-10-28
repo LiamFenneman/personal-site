@@ -17,14 +17,21 @@ async fn main() -> anyhow::Result<()> {
 
     info!("initializing router...");
 
-    let port = 3000_u16;
-    let addr = std::net::SocketAddr::from(([0, 0, 0, 0], port));
+    let host: std::net::IpAddr = std::option_env!("HOST")
+        .map(|h| h.parse().expect("could not parse HOST"))
+        .unwrap_or([127, 0, 0, 1].into());
+    let port = std::option_env!("PORT")
+        .map(|p| p.parse().expect("could not parse PORT"))
+        .unwrap_or(3000);
+    let addr = std::net::SocketAddr::from((host, port));
+
     let public_path = {
-        let mut buf = std::env::current_dir().expect("could not find current working dir");
+        let mut buf = std::env::current_dir()
+            .expect("could not find current working dir");
         buf.push("public");
         buf
     };
-    info!("{:?}", public_path);
+
     info!("router initialized, now listening on port {}", port);
 
     let api_router = Router::new().route("/hello", get(hello_sv));
