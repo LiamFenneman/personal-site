@@ -1,0 +1,4 @@
+/.direnv
+/target
+/node_modules
+/public/main.css
