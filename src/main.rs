@@ -1,9 +1,13 @@
+#![feature(async_closure)]
+
 use anyhow::Context;
 use askama::Template;
 use axum::{response::IntoResponse, routing::get, Router};
 use tower_http::services::ServeDir;
 use tracing::info;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
+
+mod resume;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -34,13 +38,11 @@ async fn main() -> anyhow::Result<()> {
 
     info!("router initialized, now listening on port {}", port);
 
-    let api_router = Router::new().route("/hello", get(hello_sv));
     let router = Router::new()
         .route("/", get(home))
-        .route("/resume", get(resume))
         .route("/projects", get(projects))
         .route("/wishlist", get(wishlist))
-        .nest("/api", api_router)
+        .nest("/resume", resume::router())
         .nest_service("/public", ServeDir::new(public_path));
 
     axum::Server::bind(&addr)
@@ -64,10 +66,5 @@ macro_rules! handler {
 }
 
 handler!(home, HomePage, "pages/index.html");
-handler!(resume, ResumePage, "pages/resume.html");
 handler!(projects, ProjectsPage, "pages/projects.html");
 handler!(wishlist, WishlistPage, "pages/wishlist.html");
-
-async fn hello_sv() -> impl IntoResponse {
-    "Hello, world!"
-}

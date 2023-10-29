@@ -3,6 +3,97 @@
 
 {% block title %}Resume :: Liam Fenneman{% endblock %}
 
+<!-- prettier-ignore -->
+{% macro print_edu(edu) %}
+<div class="">
+  <p class="font-semibold">{{ edu.what }}</p>
+  <div class="flex justify-between">
+    <p class="italic">{{ edu.where }}</p>
+    <p class="italic">{{ edu.when }}</p>
+  </div>
+</div>
+{% endmacro %}
+
+<!-- prettier-ignore -->
+{% macro print_skill(skill) %}
+<p class="">
+  <strong>{{ skill.title }}: </strong>
+  <!-- prettier-ignore -->
+  {%- for s in skill.list -%}
+  {%- if loop.last -%}
+  {{- s -}}
+  {%- else -%}
+  {{- s -}},&nbsp;
+  {%- endif -%}
+  {%- endfor -%}
+</p>
+{% endmacro %}
+
+<!-- prettier-ignore -->
+{% macro print_project(proj) %}
+<div class="">
+  <p class="font-semibold">{{ proj.title }}</p>
+  <ul class="flex flex-col gap-1 pt-2 pl-4 list-disc text-justify">
+    <!-- prettier-ignore -->
+    {%- for line in proj.list -%}
+    <li>{{- line -}}</li>
+    {%- endfor -%}
+  </ul>
+</div>
+{% endmacro %}
+
+<!-- prettier-ignore -->
+{% macro print_exp(exp) %}
+<div class="">
+  <div class="flex justify-between">
+    <p class="font-semibold">{{ exp.where }}</p>
+    <p>{{ exp.location }}</p>
+  </div>
+  <div class="flex justify-between">
+    <p class="italic">{{ exp.role }}</p>
+    <p class="italic">{{ exp.when }}</p>
+  </div>
+  <ul class="flex flex-col gap-1 pt-2 pl-4 list-disc text-justify">
+    <!-- prettier-ignore -->
+    {%- for line in exp.list -%}
+    <li>{{- line -}}</li>
+    {%- endfor -%}
+  </ul>
+</div>
+{% endmacro %}
+
+<!-- prettier-ignore -->
 {% block content %}
-TODO: resume / CV
+
+<div class="flex flex-col gap-8 pb-8">
+  <div>
+    <h3 class="text-2xl font-bold">Education</h3>
+    <hr class="pb-3" />
+    <ul class="flex flex-col gap-3">
+      {% for edu in education %} {% call print_edu(edu) %} {% endfor %}
+    </ul>
+  </div>
+  <div>
+    <h3 class="text-2xl font-bold">Technical Skills</h3>
+    <hr class="pb-3" />
+    <ul class="flex flex-col gap-3">
+      {% for skill in skills %} {% call print_skill(skill) %} {% endfor %}
+    </ul>
+  </div>
+  <div>
+    <h3 class="text-2xl font-bold">Projects</h3>
+    <hr class="pb-3" />
+    <ul class="flex flex-col gap-3">
+      {% for proj in projects %} {% call print_project(proj) %} {% endfor %}
+    </ul>
+  </div>
+  <div>
+    <h3 class="text-2xl font-bold">Work Experience</h3>
+    <hr class="pb-3" />
+    <ul class="flex flex-col gap-3">
+      {% for exp in experiences %} {% call print_exp(exp) %} {% endfor %}
+    </ul>
+  </div>
+</div>
+
 {% endblock %}
