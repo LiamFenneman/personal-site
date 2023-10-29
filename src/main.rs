@@ -36,7 +36,10 @@ async fn main() -> anyhow::Result<()> {
 
     let api_router = Router::new().route("/hello", get(hello_sv));
     let router = Router::new()
-        .route("/", get(hello))
+        .route("/", get(home))
+        .route("/resume", get(resume))
+        .route("/projects", get(projects))
+        .route("/wishlist", get(wishlist))
         .nest("/api", api_router)
         .nest_service("/public", ServeDir::new(public_path));
 
@@ -48,14 +51,23 @@ async fn main() -> anyhow::Result<()> {
     Ok(())
 }
 
-async fn hello() -> impl IntoResponse {
-    HelloTemplate
+macro_rules! handler {
+    ($fn:ident, $templ:ident, $path:literal) => {
+        async fn $fn() -> impl IntoResponse {
+            $templ
+        }
+
+        #[derive(Template)]
+        #[template(path = $path)]
+        struct $templ;
+    };
 }
+
+handler!(home, HomePage, "pages/index.html");
+handler!(resume, ResumePage, "pages/resume.html");
+handler!(projects, ProjectsPage, "pages/projects.html");
+handler!(wishlist, WishlistPage, "pages/wishlist.html");
 
 async fn hello_sv() -> impl IntoResponse {
     "Hello, world!"
 }
-
-#[derive(Template)]
-#[template(path = "index.html")]
-struct HelloTemplate;
