@@ -4,13 +4,13 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{% block title %}{{ title }}{% endblock %}</title>
-    <link href="/public/main.css" rel="stylesheet" />
+    <link href="/main.css" rel="stylesheet" />
     <script src="https://unpkg.com/htmx.org@1.9.6" defer></script>
     {% block head %}{% endblock %}
   </head>
   <body class="bg-dark-bg0 text-dark-fg0 min-h-screen" hx-boost="true">
     {% include "partials/header.html" %} {% include "partials/nav.html" %}
-    <main class="max-w-screen-md mx-auto">
+    <main class="max-w-screen-md mx-auto pb-8">
       {% block content %}{% endblock %}
     </main>
   </body>

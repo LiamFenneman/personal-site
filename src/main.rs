@@ -8,6 +8,7 @@ use tracing::info;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 mod resume;
+mod projects;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -40,10 +41,10 @@ async fn main() -> anyhow::Result<()> {
 
     let router = Router::new()
         .route("/", get(home))
-        .route("/projects", get(projects))
         .route("/wishlist", get(wishlist))
         .nest("/resume", resume::router())
-        .nest_service("/public", ServeDir::new(public_path));
+        .nest("/projects", projects::router())
+        .fallback_service(ServeDir::new(public_path));
 
     axum::Server::bind(&addr)
         .serve(router.into_make_service())
@@ -66,5 +67,4 @@ macro_rules! handler {
 }
 
 handler!(home, HomePage, "pages/index.html");
-handler!(projects, ProjectsPage, "pages/projects.html");
 handler!(wishlist, WishlistPage, "pages/wishlist.html");

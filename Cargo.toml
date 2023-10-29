@@ -8,6 +8,9 @@ anyhow = "1.0.75"
 askama = { version = "0.12.1", features = ["with-axum"] }
 askama_axum = "0.3.0"
 axum = "0.6.20"
+markdown = { version = "1.0.0-alpha.14", features = ["log", "serde"] }
+serde = { version = "1.0.190", features = ["derive"] }
+serde_yaml = "0.9.27"
 tokio = { version = "1.32.0", features = ["full"] }
 tower = "0.4.13"
 tower-http = { version = "0.4.4", features = ["fs"] }

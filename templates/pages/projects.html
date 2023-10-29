@@ -4,5 +4,22 @@
 {% block title %}Project :: Liam Fenneman{% endblock %}
 
 {% block content %}
-TODO: list of projects
+<div class="flex flex-col gap-8">
+  {% if list.len() == 0 %}
+  <p class="text-center">No projects found.</p>
+  {% else %} {% for project in list %}
+  <div class="flex flex-col gap-2">
+    <a href="{{ project.slug }}" class="text-2xl font-bold"
+      >{{ project.name }}</a
+    >
+    <div class="flex justify-left gap-4 text-sm">
+      <p class="text-gray-500">{{ project.created_at }}</p>
+      {%- match project.updated_at -%} {%- when Some with (updated_at) -%}
+      <p class="text-gray-500">(updated: {{ updated_at }})</p>
+      {%- when None -%} {%- endmatch -%}
+    </div>
+    <p class="text-gray-500">{{ project.description }}</p>
+  </div>
+  {% endfor %} {% endif %}
+</div>
 {% endblock %}

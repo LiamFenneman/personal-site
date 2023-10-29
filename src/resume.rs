@@ -26,6 +26,7 @@ struct Skill<'a> {
 #[derive(Debug, Clone, Copy, Default)]
 struct Project<'a> {
     title: &'a str,
+    url: Option<&'a str>,
     list: &'a [&'a str],
 }
 
@@ -98,6 +99,7 @@ const SKILLS: &[Skill] = &[
 const PROJECTS: &[Project] = &[
     Project {
         title: "Ipipiri Digital Trails: Augmented Reality Experience",
+        url: None,
         list: &[
             "I worked with the Russell Museum to develop an augmented reality application that allows users to explore the history of Russell.",
             "My contribution was the development of the augmented reality elements and building the Android application.",
@@ -106,6 +108,7 @@ const PROJECTS: &[Project] = &[
     },
     Project {
         title: "Home Lab",
+        url: None,
         list: &[
             "I maintain a small home lab with two servers for the purpose of learning server technology.",
             "I also use it to manage all my home networking, host internal services, and create isolated development environments.",
@@ -114,6 +117,7 @@ const PROJECTS: &[Project] = &[
     },
     Project {
         title: "Recipe Book",
+        url: None,
         list: &[
             "Web application to manage recipes in the browser.",
             "Integrates with the ChatGPT for automatically creating recipes.",
@@ -122,6 +126,7 @@ const PROJECTS: &[Project] = &[
     },
     Project {
         title: "Wedding/Event Venue Website",
+        url: Some("https://web.archive.org/web/20220121215931/https://summerhouseweddings.co.nz/"),
         list: &[
             "Website for a weddings and events venue. It was a full-stack application that used basic HTML and CSS for the front-end and PHP and MySQL for the back-end.",
             "Implemented a basic content management system that allowed the content of the website to be changed without requiring changes to the code.",

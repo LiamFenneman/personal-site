@@ -1,3 +1,32 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  .md h1 {
+    @apply text-2xl font-bold;
+  }
+  .md h2 {
+    @apply text-xl font-semibold;
+  }
+  .md h3 {
+    @apply text-lg;
+  }
+  .md p {
+    @apply text-justify;
+  }
+  .md a {
+    @apply text-dark-aqua hover:underline;
+  }
+  .md blockquote {
+    @apply border-l-4 border-dark-fg0 my-4 pl-4 flex flex-col gap-1;
+  }
+  .md ul {
+    @apply list-disc list-inside;
+    /* TODO: nested lists */
+  }
+  .md ol {
+    @apply list-decimal list-inside;
+    /* TODO: nested lists */
+  }
+}

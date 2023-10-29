@@ -1,0 +1,10 @@
+<!-- prettier-ignore -->
+{% extends "../base.html" %}
+
+{% block title %}Project :: Liam Fenneman{% endblock %}
+
+{% block content %}
+<article class="flex flex-col gap-2 md">{{ content|safe }}</article>
+<hr class="my-6" />
+<a href="/projects" class="text-dark-aqua hover:underline">Back to Projects</a>
+{% endblock %}

@@ -32,8 +32,17 @@
 <!-- prettier-ignore -->
 {% macro print_project(proj) %}
 <div class="">
+  {% match proj.url %} {% when Some with (url) %}
+  <div class="flex justify-between">
+    <a href="{{ url }}" hx-boost="false" target="_blank" class="font-semibold"
+      >{{ proj.title }}</a
+    >
+    <a href="{{ url }}" hx-boost="false" target="_blank" class="">(view)</a>
+  </div>
+  {% when None %}
   <p class="font-semibold">{{ proj.title }}</p>
-  <ul class="flex flex-col gap-1 pt-2 pl-4 list-disc text-justify">
+  {% endmatch %}
+  <ul class="flex flex-col gap-1 pt-2 list-disc list-inside text-justify">
     <!-- prettier-ignore -->
     {%- for line in proj.list -%}
     <li>{{- line -}}</li>
@@ -53,7 +62,7 @@
     <p class="italic">{{ exp.role }}</p>
     <p class="italic">{{ exp.when }}</p>
   </div>
-  <ul class="flex flex-col gap-1 pt-2 pl-4 list-disc text-justify">
+  <ul class="flex flex-col gap-1 pt-2 list-disc list-inside text-justify">
     <!-- prettier-ignore -->
     {%- for line in exp.list -%}
     <li>{{- line -}}</li>
@@ -65,7 +74,7 @@
 <!-- prettier-ignore -->
 {% block content %}
 
-<div class="flex flex-col gap-8 pb-8">
+<div class="flex flex-col gap-8">
   <div>
     <h3 class="text-2xl font-bold">Education</h3>
     <hr class="pb-3" />
