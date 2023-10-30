@@ -158,7 +158,14 @@ async fn get_project_by_name(
         return Err(StatusCode::INTERNAL_SERVER_ERROR);
     };
 
-    Ok(ProjectPage { frontmatter, content })
+    // ensure that all links open in a new tab and don't use HTMX
+    let content = content
+        .replace("<a href=", "<a hx-boost=\"false\" target=\"_blank\" href=");
+
+    Ok(ProjectPage {
+        frontmatter,
+        content,
+    })
 }
 
 fn parse_frontmatter(path: &PathBuf) -> Result<ProjectFrontmatter, StatusCode> {

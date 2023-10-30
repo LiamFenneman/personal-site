@@ -26,7 +26,9 @@
     <p aria-label="Date updated">(updated: {{ updated_at }})</p>
     {%- when None -%} {%- endmatch -%}
   </div>
-  <article class="flex flex-col gap-4 text-justify md">{{ content|safe }}</article>
+  <article class="flex flex-col gap-4 text-justify md">
+    {{ content|safe }}
+  </article>
 </div>
 <hr class="my-6" />
 <a href="/projects" class="text-dark-aqua hover:underline">Back to Projects</a>
