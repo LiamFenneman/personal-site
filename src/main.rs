@@ -2,20 +2,31 @@
 
 use anyhow::Context;
 use askama::Template;
-use axum::{response::IntoResponse, routing::get, Router};
-use tower_http::services::ServeDir;
+use axum::{
+    http::{header, Response},
+    middleware::map_response,
+    response::IntoResponse,
+    routing::get,
+    Router,
+};
+use tower::ServiceBuilder;
+use tower_http::{
+    compression::CompressionLayer, services::ServeDir, trace::TraceLayer,
+};
 use tracing::info;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
-mod resume;
 mod projects;
+mod resume;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     tracing_subscriber::registry()
         .with(
             tracing_subscriber::EnvFilter::try_from_default_env()
-                .unwrap_or_else(|_| "warn,personal_site=debug".into()),
+                .unwrap_or_else(|_| {
+                    "warn,tower_http=trace,personal_site=debug".into()
+                }),
         )
         .with(tracing_subscriber::fmt::layer())
         .init();
@@ -44,7 +55,13 @@ async fn main() -> anyhow::Result<()> {
         .route("/wishlist", get(wishlist))
         .nest("/resume", resume::router())
         .nest("/projects", projects::router())
-        .fallback_service(ServeDir::new(public_path));
+        .fallback_service(ServeDir::new(public_path))
+        .layer(
+            ServiceBuilder::new()
+                .layer(TraceLayer::new_for_http())
+                .layer(CompressionLayer::new()),
+        )
+        .layer(map_response(set_vary_header));
 
     axum::Server::bind(&addr)
         .serve(router.into_make_service())
@@ -52,6 +69,26 @@ async fn main() -> anyhow::Result<()> {
         .context("error while starting server")?;
 
     Ok(())
+}
+
+async fn set_vary_header<T>(mut response: Response<T>) -> Response<T> {
+    match response.headers().get(header::VARY) {
+        Some(_vary) => {
+            todo!("append ACCEPT_ENCODING to VARY header")
+        }
+        None => {
+            // If the response doesn't already have a Vary header, then add one
+            // with the value `Accept-Encoding`
+            // This needs to be done since we are using compression.
+            //
+            // Source:
+            // https://developer.mozilla.org/en-US/docs/Web/HTTP/Compression
+            response
+                .headers_mut()
+                .insert(header::VARY, header::ACCEPT_ENCODING.into());
+        }
+    }
+    response
 }
 
 macro_rules! handler {
