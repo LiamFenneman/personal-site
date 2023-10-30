@@ -16,14 +16,14 @@
 
 <!-- prettier-ignore -->
 {% macro print_skill(skill) %}
-<p class="break-words">
+<p>
   <strong>{{ skill.title }}: </strong>
   <!-- prettier-ignore -->
   {%- for s in skill.list -%}
   {%- if loop.last -%}
   {{- s -}}
   {%- else -%}
-  {{- s -}},&nbsp;
+  {{- s -}},&#32;
   {%- endif -%}
   {%- endfor -%}
 </p>
