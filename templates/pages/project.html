@@ -1,10 +1,33 @@
 <!-- prettier-ignore -->
 {% extends "../base.html" %}
 
+{% import "../macros.html" as macros %}
+
 {% block title %}Project :: Liam Fenneman{% endblock %}
 
 {% block content %}
-<article class="flex flex-col gap-2 md">{{ content|safe }}</article>
+<div class="flex flex-col gap-2">
+  <div class="flex gap-4 items-center">
+    <h1 class="text-2xl font-bold">{{ frontmatter.name }}</h1>
+    <ul class="flex flex-row justify-start gap-4" aria-label="External links">
+      <!-- prettier-ignore -->
+      {%- match frontmatter.links -%}
+      {%- when Some with (links) -%}
+        {%- for link in links.0 -%}
+          {%- call macros::print_link(link) -%}
+        {%- endfor -%}
+      {%- when None -%}
+      {%- endmatch -%}
+    </ul>
+  </div>
+  <div class="flex gap-4 text-sm">
+    <p aria-label="Date created">{{ frontmatter.created_at }}</p>
+    {%- match frontmatter.updated_at -%} {%- when Some with (updated_at) -%}
+    <p aria-label="Date updated">(updated: {{ updated_at }})</p>
+    {%- when None -%} {%- endmatch -%}
+  </div>
+  <article class="flex flex-col gap-4 text-justify md">{{ content|safe }}</article>
+</div>
 <hr class="my-6" />
 <a href="/projects" class="text-dark-aqua hover:underline">Back to Projects</a>
 {% endblock %}

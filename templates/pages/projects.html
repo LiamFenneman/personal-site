@@ -1,6 +1,8 @@
 <!-- prettier-ignore -->
 {% extends "../base.html" %}
 
+{% import "../macros.html" as macros %}
+
 {% block title %}Project :: Liam Fenneman{% endblock %}
 
 {% block content %}
@@ -9,16 +11,28 @@
   <p class="text-center">No projects found.</p>
   {% else %} {% for project in list %}
   <div class="flex flex-col gap-2">
-    <a href="{{ project.slug }}" class="text-2xl font-bold"
-      >{{ project.name }}</a
-    >
-    <div class="flex justify-left gap-4 text-sm">
-      <p class="text-gray-500">{{ project.created_at }}</p>
+    <div class="flex gap-4 items-center">
+      <a href="{{ project.slug }}" class="text-2xl font-bold hover:underline"
+        >{{ project.name }}</a
+      >
+      <ul class="flex flex-row justify-start gap-4" aria-label="External links">
+        <!-- prettier-ignore -->
+        {%- match project.links -%}
+        {%- when Some with (links) -%}
+          {%- for link in links.0 -%}
+            {%- call macros::print_link(link) -%}
+          {%- endfor -%}
+        {%- when None -%}
+        {%- endmatch -%}
+      </ul>
+    </div>
+    <div class="flex gap-4 text-sm">
+      <p aria-label="Date created">{{ project.created_at }}</p>
       {%- match project.updated_at -%} {%- when Some with (updated_at) -%}
-      <p class="text-gray-500">(updated: {{ updated_at }})</p>
+      <p aria-label="Date updated">(updated: {{ updated_at }})</p>
       {%- when None -%} {%- endmatch -%}
     </div>
-    <p class="text-gray-500">{{ project.description }}</p>
+    <p aria-label="Short project description">{{ project.description }}</p>
   </div>
   {% endfor %} {% endif %}
 </div>

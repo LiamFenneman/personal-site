@@ -19,7 +19,7 @@
     @apply text-dark-aqua hover:underline;
   }
   .md blockquote {
-    @apply border-l-4 border-dark-fg0 my-4 pl-4 flex flex-col gap-1;
+    @apply border-l-4 border-dark-fg0 pl-4 flex flex-col gap-1;
   }
   .md ul {
     @apply list-disc list-inside;

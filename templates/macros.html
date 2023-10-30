@@ -1,0 +1,24 @@
+<!-- prettier-ignore -->
+{% macro print_link(link) %} {% match link %}
+{% when Link::GitHub with (url) %}
+<li>
+  <a
+    href="{{ url }}"
+    class="fill-dark-aqua hover:fill-dark-grey block w-6"
+    aria-label="GitHub"
+    target="_blank"
+    hx-boost="false"
+    >{%- include "../../public/images/svg/github-mark.svg" -%}</a
+  >
+</li>
+{% when Link::Other with (title, url) %}
+<li>
+  <a
+    href="{{ url }}"
+    class="text-dark-aqua hover:underline"
+    target="_blank"
+    hx-boost="false"
+    >{{ title }}</a
+  >
+</li>
+{% endmatch %} {% endmacro %}

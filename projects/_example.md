@@ -1,8 +1,8 @@
 ---
 name: Example
 description: >-
-    Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint cillum
-    sint consectetur cupidatat.
+  Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint cillum
+  sint consectetur cupidatat.
 created_at: 2023-10-29
 updated_at: 2023-10-29
 ---
@@ -14,10 +14,10 @@ updated_at: 2023-10-29
 ### Another
 
 **Lorem ipsum dolor sit amet**, officia excepteur ex fugiat reprehenderit enim
-labore culpa sint ad nisi *Lorem pariatur mollit* ex esse exercitation amet. Nisi
+labore culpa sint ad nisi _Lorem pariatur mollit_ ex esse exercitation amet. Nisi
 anim cupidatat excepteur officia. Reprehenderit nostrud nostrud ipsum Lorem est
 aliquip amet voluptate voluptate dolor minim nulla est proident. Nostrud officia
-pariatur ut officia. ***Sit irure elit esse*** ea nulla sunt ex occaecat reprehenderit
+pariatur ut officia. **_Sit irure elit esse_** ea nulla sunt ex occaecat reprehenderit
 commodo officia dolor Lorem duis laboris cupidatat officia voluptate. Culpa
 proident adipisicing id nulla nisi laboris ex in Lorem sunt duis officia
 eiusmod. Aliqua reprehenderit commodo ex non excepteur duis sunt velit enim.
@@ -34,8 +34,8 @@ eiusmod. Aliqua reprehenderit commodo ex non excepteur duis sunt velit enim.
 > - Revenue was off the chart.
 > - Profits were higher than ever.
 >
->  *Everything* is going according to **plan**.
-> 
+>   _Everything_ is going according to **plan**.
+>
 > My favorite search engine is [Duck Duck Go](https://duckduckgo.com).
 
 My favorite search engine is [Duck Duck Go](https://duckduckgo.com).
@@ -45,15 +45,15 @@ My favorite search engine is [Duck Duck Go](https://duckduckgo.com).
 1. First item
 1. Second item
 1. Third item
-    1. Indented item
-    1. Indented item
+1. Indented item
+1. Indented item
 1. Fourth item
 
 - First item
 - Second item
 - Third item
-    - Indented item
-    - Indented item
+  - Indented item
+  - Indented item
 - Fourth item
 
 ---
