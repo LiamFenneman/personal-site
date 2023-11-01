@@ -33,6 +33,8 @@ async fn main() -> anyhow::Result<()> {
 
     info!("initializing router...");
 
+    // get host and port from environment variables
+    // default: 127.0.0.1:3000
     let host: std::net::IpAddr = std::option_env!("HOST")
         .map(|h| h.parse().expect("could not parse HOST"))
         .unwrap_or([127, 0, 0, 1].into());
@@ -41,12 +43,8 @@ async fn main() -> anyhow::Result<()> {
         .unwrap_or(3000);
     let addr = std::net::SocketAddr::from((host, port));
 
-    let public_path = {
-        let mut buf = std::env::current_dir()
-            .expect("could not find current working dir");
-        buf.push("public");
-        buf
-    };
+    // get public path from `./public`
+    let public_path = std::env::current_dir()?.join("public");
 
     info!("router initialized, now listening on port {}", port);
 
@@ -57,10 +55,12 @@ async fn main() -> anyhow::Result<()> {
         .nest("/projects", projects::router())
         .fallback_service(ServeDir::new(public_path))
         .layer(
+            // add tracing and compression to all routes
             ServiceBuilder::new()
                 .layer(TraceLayer::new_for_http())
                 .layer(CompressionLayer::new()),
         )
+        // set the vary header to (at-least) accept-encoding
         .layer(map_response(set_vary_header));
 
     axum::Server::bind(&addr)
@@ -71,23 +71,19 @@ async fn main() -> anyhow::Result<()> {
     Ok(())
 }
 
+/// Set the `Vary` header to include (at-least) `Accept-Encoding` since all the
+/// resources are being compressed.
+///
+/// Recommendation by MDN:
+/// "the server must send a Vary header containing at least Accept-Encoding
+/// alongside this header in the response."
+///
+/// Source:
+/// - https://developer.mozilla.org/en-US/docs/Web/HTTP/Compression#end-to-end_compression
 async fn set_vary_header<T>(mut response: Response<T>) -> Response<T> {
-    match response.headers().get(header::VARY) {
-        Some(_vary) => {
-            todo!("append ACCEPT_ENCODING to VARY header")
-        }
-        None => {
-            // If the response doesn't already have a Vary header, then add one
-            // with the value `Accept-Encoding`
-            // This needs to be done since we are using compression.
-            //
-            // Source:
-            // https://developer.mozilla.org/en-US/docs/Web/HTTP/Compression
-            response
-                .headers_mut()
-                .insert(header::VARY, header::ACCEPT_ENCODING.into());
-        }
-    }
+    response
+        .headers_mut()
+        .append(header::VARY, header::ACCEPT_ENCODING.into());
     response
 }
 

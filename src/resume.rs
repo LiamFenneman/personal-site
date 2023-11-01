@@ -159,6 +159,11 @@ const EXPERIENCES: &[Experience] = &[
 ];
 
 pub fn router() -> Router {
+    // TODO: the sections should be stored in some file (e.g. resume.toml or
+    // resume.md) and then loaded in when needed. This would allow for modifying
+    // the resume options outside the code.
+    // > some form of caching would be good here, but it should allow for the
+    // > file to be updated without requiring a server restart
     Router::new().route(
         "/",
         get(async || ResumePage {
