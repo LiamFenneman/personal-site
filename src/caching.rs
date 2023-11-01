@@ -36,13 +36,18 @@ impl<S> Layer<S> for CacheLayer {
 ///
 /// The default is:
 /// - `Cache-Control: public, no-cache, max-age=0`
-/// - `Last-Modified: <current time>`
+///
+/// **Note:** the default doesn't use either `Last-Modified` or `ETag` headers.
 #[derive(Debug, Clone, Copy, Default)]
 pub struct Options {
     /// The core use-cases of the `Cache-Control` header.
     pub cache_control: CacheControl,
-    /// Should the `Cache-Control` use `private` (true) or `public` (false).
+    /// Should the `Cache-Control` use `private` or `public` (default: false).
     pub private: bool,
+    /// Should the `Cache-Control` use `immutable` (default: false).
+    pub immutable: bool,
+    /// Should the `Last-Modified` header be used (default: false).
+    pub use_last_modified: bool,
     /// The strategy to use for generating ETags.
     pub etag_strategy: ETagStrategy,
 }
@@ -52,13 +57,15 @@ pub struct Options {
 /// Note: This doesn't include *all* of the possible options.
 #[derive(Debug, Clone, Copy, Default)]
 pub enum CacheControl {
-    /// Cache-Control: `max-age=<seconds>`
-    MaxAge(u32),
     /// Cache-Control: `no-cache, max-age=0`
     #[default]
     NoCache,
     /// Cache-Control: `no-store`
     NoStore,
+    /// Cache-Control: `max-age=<seconds>`
+    MaxAge(u32),
+    /// Cache-Control: `max-age=<seconds>, must-revalidate`
+    MustRevalidate(u32),
 }
 
 /// The strategy to use for generating ETags.
@@ -108,19 +115,30 @@ where
 
         let cache_control = {
             let publicity = if self.options.private {
-                "private"
+                "private, "
             } else {
-                "public"
+                "public, "
             };
 
             let core = match self.options.cache_control {
-                CacheControl::MaxAge(secs) => format!("max-age={}", secs),
                 CacheControl::NoCache => "no-cache, max-age=0".to_string(),
                 CacheControl::NoStore => "no-store".to_string(),
+                CacheControl::MaxAge(secs) => format!("max-age={}", secs),
+                CacheControl::MustRevalidate(secs) => {
+                    format!("max-age={}, must-revalidate", secs)
+                }
             };
 
-            format!("{}, {}", publicity, core)
+            let immutable = if self.options.immutable {
+                ", immutable"
+            } else {
+                ""
+            };
+
+            format!("{}{}{}", publicity, core, immutable)
         };
+
+        let use_last_modified = self.options.use_last_modified;
 
         Box::pin(async move {
             let mut response: Response = future.await?;
@@ -135,12 +153,16 @@ where
                 header::HeaderValue::try_from(&cache_control).unwrap(),
             );
 
-            let now = OffsetDateTime::now_utc().format(&Rfc2822).unwrap();
+            if use_last_modified {
+                // TODO: figure out the best way to get the last modified time
 
-            response.headers_mut().insert(
-                header::LAST_MODIFIED,
-                header::HeaderValue::try_from(&now).unwrap(),
-            );
+                let now = OffsetDateTime::now_utc().format(&Rfc2822).unwrap();
+
+                response.headers_mut().insert(
+                    header::LAST_MODIFIED,
+                    header::HeaderValue::try_from(&now).unwrap(),
+                );
+            }
 
             // TODO: ETag header
 
