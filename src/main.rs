@@ -18,6 +18,7 @@ mod home;
 mod projects;
 mod resume;
 mod wishlist;
+pub mod links;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {

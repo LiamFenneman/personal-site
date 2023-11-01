@@ -12,12 +12,12 @@
   {% else %} {% for project in list %}
   <div class="flex flex-col gap-2">
     <div class="flex gap-4 items-center">
-      <a href="{{ project.slug }}" class="text-2xl font-bold hover:underline"
+      <a href="{{ project.metadata.slug }}" class="text-2xl font-bold hover:underline"
         >{{ project.name }}</a
       >
       <ul class="flex flex-row justify-start gap-4" aria-label="External links">
         <!-- prettier-ignore -->
-        {%- match project.links -%}
+        {%- match project.metadata.links -%}
         {%- when Some with (links) -%}
           {%- for link in links.0 -%}
             {%- call macros::print_link(link) -%}
@@ -27,8 +27,8 @@
       </ul>
     </div>
     <div class="flex gap-4 text-sm">
-      <p aria-label="Date created">{{ project.created_at }}</p>
-      {%- match project.updated_at -%} {%- when Some with (updated_at) -%}
+      <p aria-label="Date created">{{ project.metadata.created_at }}</p>
+      {%- match project.metadata.updated_at -%} {%- when Some with (updated_at) -%}
       <p aria-label="Date updated">(updated: {{ updated_at }})</p>
       {%- when None -%} {%- endmatch -%}
     </div>
