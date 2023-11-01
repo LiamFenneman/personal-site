@@ -6,7 +6,6 @@ use axum::{
     response::Response,
 };
 use futures_util::future::BoxFuture;
-use time::{format_description::well_known::Rfc2822, OffsetDateTime};
 use tower::{Layer, Service};
 use tracing::debug;
 
@@ -46,10 +45,6 @@ pub struct Options {
     pub private: bool,
     /// Should the `Cache-Control` use `immutable` (default: false).
     pub immutable: bool,
-    /// Should the `Last-Modified` header be used (default: false).
-    pub use_last_modified: bool,
-    /// The strategy to use for generating ETags.
-    pub etag_strategy: ETagStrategy,
 }
 
 /// The core use-cases of the `Cache-Control` header.
@@ -66,21 +61,6 @@ pub enum CacheControl {
     MaxAge(u32),
     /// Cache-Control: `max-age=<seconds>, must-revalidate`
     MustRevalidate(u32),
-}
-
-/// The strategy to use for generating ETags.
-///
-/// This is used to determine how the ETag is generated for a response.
-///
-/// - `None` (default): no ETag is generated and the header is not included
-/// - `Weak`: TODO
-/// - `Strong`: TODO
-#[derive(Debug, Clone, Copy, Default)]
-pub enum ETagStrategy {
-    #[default]
-    None,
-    Weak,
-    Strong,
 }
 
 #[derive(Debug, Clone)]
@@ -138,8 +118,6 @@ where
             format!("{}{}{}", publicity, core, immutable)
         };
 
-        let use_last_modified = self.options.use_last_modified;
-
         Box::pin(async move {
             let mut response: Response = future.await?;
 
@@ -152,19 +130,6 @@ where
                 header::CACHE_CONTROL,
                 header::HeaderValue::try_from(&cache_control).unwrap(),
             );
-
-            if use_last_modified {
-                // TODO: figure out the best way to get the last modified time
-
-                let now = OffsetDateTime::now_utc().format(&Rfc2822).unwrap();
-
-                response.headers_mut().insert(
-                    header::LAST_MODIFIED,
-                    header::HeaderValue::try_from(&now).unwrap(),
-                );
-            }
-
-            // TODO: ETag header
 
             Ok(response)
         })
