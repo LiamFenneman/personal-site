@@ -50,7 +50,7 @@ async fn get_project_list() -> crate::error::Result<ProjectsPage> {
     let mut projects = projects
         .iter()
         .map(|path| {
-            let Some(stem) = path.file_stem().map(|s| s.to_str()).flatten()
+            let Some(stem) = path.file_stem().and_then(|s| s.to_str())
             else {
                 bail!("could not get file stem");
             };
@@ -59,7 +59,7 @@ async fn get_project_list() -> crate::error::Result<ProjectsPage> {
         .filter_map(|res| res.ok())
         // filter out files that start with `_` since this is how we can mark
         // hidden files
-        .filter(|(_, stem)| !stem.starts_with("_"))
+        .filter(|(_, stem)| !stem.starts_with('_'))
         .map(|(path, stem)| {
             Post::<Frontmatter, Metadata>::from_file_with_metadata(
                 path,
@@ -95,7 +95,7 @@ async fn get_project_by_name(
     .context("failed to create post")?;
 
     // actually parse the content into HTML
-    project.parse_content();
+    project.parse_content()?;
 
     Ok(ProjectPage { project })
 }
