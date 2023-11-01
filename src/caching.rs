@@ -8,6 +8,7 @@ use axum::{
 use futures_util::future::BoxFuture;
 use time::{format_description::well_known::Rfc2822, OffsetDateTime};
 use tower::{Layer, Service};
+use tracing::debug;
 
 #[derive(Debug, Clone, Default)]
 pub struct CacheLayer {
@@ -15,11 +16,7 @@ pub struct CacheLayer {
 }
 
 impl CacheLayer {
-    pub fn new() -> Self {
-        Self::default()
-    }
-
-    pub fn with_options(options: Options) -> Self {
+    pub fn new(options: Options) -> Self {
         Self { options }
     }
 }
@@ -128,14 +125,19 @@ where
         Box::pin(async move {
             let mut response: Response = future.await?;
 
-            response.headers_mut().append(
+            if let Some(cc) = response.headers().get(header::CACHE_CONTROL) {
+                debug!("response already contains the cache-control header: {cc:?}");
+                return Ok(response);
+            }
+
+            response.headers_mut().insert(
                 header::CACHE_CONTROL,
                 header::HeaderValue::try_from(&cache_control).unwrap(),
             );
 
             let now = OffsetDateTime::now_utc().format(&Rfc2822).unwrap();
 
-            response.headers_mut().append(
+            response.headers_mut().insert(
                 header::LAST_MODIFIED,
                 header::HeaderValue::try_from(&now).unwrap(),
             );

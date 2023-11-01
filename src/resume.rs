@@ -1,6 +1,8 @@
 use askama::Template;
 use axum::{routing::get, Router};
 
+use crate::caching::{CacheLayer, self};
+
 #[derive(Template)]
 #[template(path = "pages/resume.html")]
 struct ResumePage<'a> {
@@ -164,13 +166,18 @@ pub fn router() -> Router {
     // the resume options outside the code.
     // > some form of caching would be good here, but it should allow for the
     // > file to be updated without requiring a server restart
-    Router::new().route(
-        "/",
-        get(async || ResumePage {
-            education: EDUCATION,
-            skills: SKILLS,
-            projects: PROJECTS,
-            experiences: EXPERIENCES,
-        }),
-    )
+    Router::new()
+        .route(
+            "/",
+            get(async || ResumePage {
+                education: EDUCATION,
+                skills: SKILLS,
+                projects: PROJECTS,
+                experiences: EXPERIENCES,
+            }),
+        )
+        .layer(CacheLayer::new(caching::Options {
+            cache_control: caching::CacheControl::MaxAge(60),
+            ..Default::default()
+        }))
 }

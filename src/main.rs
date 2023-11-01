@@ -16,7 +16,7 @@ use tower_http::{
 use tracing::info;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
-mod caching;
+pub mod caching;
 mod projects;
 mod resume;
 
@@ -63,11 +63,7 @@ async fn main() -> anyhow::Result<()> {
         )
         // set the vary header to (at-least) accept-encoding
         .layer(map_response(set_vary_header))
-        .layer(caching::CacheLayer::with_options(caching::Options {
-            cache_control: caching::CacheControl::MaxAge(60),
-            private: false,
-            etag_strategy: caching::ETagStrategy::None,
-        }));
+        .layer(caching::CacheLayer::default());
 
     axum::Server::bind(&addr)
         .serve(router.into_make_service())
