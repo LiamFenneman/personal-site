@@ -21,10 +21,10 @@ impl CacheLayer {
 }
 
 impl<S> Layer<S> for CacheLayer {
-    type Service = ResponseService<S>;
+    type Service = CacheService<S>;
 
     fn layer(&self, inner: S) -> Self::Service {
-        ResponseService {
+        CacheService {
             inner,
             options: self.options,
         }
@@ -64,12 +64,12 @@ pub enum CacheControl {
 }
 
 #[derive(Debug, Clone)]
-pub struct ResponseService<S> {
+pub struct CacheService<S> {
     inner: S,
     options: Options,
 }
 
-impl<S> Service<Request<Body>> for ResponseService<S>
+impl<S> Service<Request<Body>> for CacheService<S>
 where
     S: Service<Request<Body>, Response = Response> + Send + 'static,
     S::Future: Send + 'static,
