@@ -59,7 +59,15 @@ async fn get_project_list() -> crate::error::Result<ProjectsPage> {
         .filter_map(|res| res.ok())
         // filter out files that start with `_` since this is how we can mark
         // hidden files
-        .filter(|(_, stem)| !stem.starts_with('_'))
+        .filter(|(_, stem)| {
+            // if the `DISABLE_FILTER` environment variable is set to 1 then we
+            // don't filter out any files
+            if option_env!("DISABLE_FILTER").is_some_and(|v| v == "1") {
+                return true;
+            }
+
+            !stem.starts_with('_')
+        })
         .map(|(path, stem)| {
             Post::<Frontmatter, Metadata>::from_file_with_metadata(
                 path,
