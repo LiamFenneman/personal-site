@@ -1,12 +1,9 @@
 #![feature(async_closure)]
 
 use anyhow::Context;
-use askama::Template;
 use axum::{
     http::{header, Response},
     middleware::map_response,
-    response::IntoResponse,
-    routing::get,
     Router,
 };
 use tower::ServiceBuilder;
@@ -17,8 +14,10 @@ use tracing::info;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 pub mod caching;
+mod home;
 mod projects;
 mod resume;
+mod wishlist;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -50,10 +49,10 @@ async fn main() -> anyhow::Result<()> {
     info!("router initialized, now listening on port {}", port);
 
     let router = Router::new()
-        .route("/", get(home))
-        .route("/wishlist", get(wishlist))
+        .merge(home::router())
         .nest("/resume", resume::router())
         .nest("/projects", projects::router())
+        .nest("/wishlist", wishlist::router())
         .fallback_service(ServeDir::new(public_path))
         .layer(
             // add tracing and compression to all routes
@@ -88,18 +87,3 @@ async fn set_vary_header<T>(mut response: Response<T>) -> Response<T> {
         .append(header::VARY, header::ACCEPT_ENCODING.into());
     response
 }
-
-macro_rules! handler {
-    ($fn:ident, $templ:ident, $path:literal) => {
-        async fn $fn() -> impl IntoResponse {
-            $templ
-        }
-
-        #[derive(Template)]
-        #[template(path = $path)]
-        struct $templ;
-    };
-}
-
-handler!(home, HomePage, "pages/index.html");
-handler!(wishlist, WishlistPage, "pages/wishlist.html");
