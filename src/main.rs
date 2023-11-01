@@ -13,12 +13,16 @@ use tower_http::{
 use tracing::info;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
+pub use error::AppError;
+
 pub mod caching;
+pub mod error;
 mod home;
+pub mod links;
+pub mod posts;
 mod projects;
 mod resume;
 mod wishlist;
-pub mod links;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
