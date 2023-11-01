@@ -17,7 +17,7 @@
     <p class="text-center">No wishlist projects found.</p>
     {% else %} {% for post in list %}
     <div class="flex flex-col gap-2">
-      <hr>
+      <hr />
       <h3 class="text-xl font-semibold">{{ post.frontmatter.name }}</h3>
       <div class="flex gap-4 text-sm">
         <p aria-label="Date created">{{ post.frontmatter.created_at }}</p>
@@ -26,7 +26,9 @@
         <p aria-label="Date updated">(updated: {{ updated_at }})</p>
         {%- when None -%} {%- endmatch -%}
       </div>
-      <p aria-label="Project content">{{ post.content|safe }}</p>
+      <article class="flex flex-col gap-4 text-justify md-lite">
+        {{ post.content|safe }}
+      </article>
     </div>
     {% endfor %} {% endif %}
   </div>

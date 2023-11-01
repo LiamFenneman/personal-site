@@ -27,8 +27,6 @@ eiusmod. Aliqua reprehenderit commodo ex non excepteur duis sunt velit enim.
 > The Witch bade her clean the pots and kettles and sweep the floor and keep the
 > fire fed with wood.
 
----
-
 > ### The quarterly results look great!
 >
 > - Revenue was off the chart.
@@ -40,13 +38,11 @@ eiusmod. Aliqua reprehenderit commodo ex non excepteur duis sunt velit enim.
 
 My favorite search engine is [Duck Duck Go](https://duckduckgo.com).
 
----
+### Lists
 
 1. First item
 1. Second item
 1. Third item
-1. Indented item
-1. Indented item
 1. Fourth item
 
 - First item
