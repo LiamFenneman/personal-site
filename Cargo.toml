@@ -10,6 +10,7 @@ askama_axum = "0.3.0"
 axum = { version = "0.6.20", features = ["tracing", "macros"] }
 futures-util = "0.3.29"
 markdown = { version = "1.0.0-alpha.14", features = ["log", "serde"] }
+ron = "0.8.1"
 serde = { version = "1.0.190", features = ["derive"] }
 serde_yaml = "0.9.27"
 time = { version = "0.3.30", features = ["formatting"] }

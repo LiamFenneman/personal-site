@@ -28,7 +28,7 @@ impl IntoResponse for AppError {
         // TODO: log error? not sure if this is the right place for it
         (
             StatusCode::INTERNAL_SERVER_ERROR,
-            format!("Something went wrong: {}", self.0),
+            format!("Something went wrong: {:?}", self.0),
         )
             .into_response()
     }

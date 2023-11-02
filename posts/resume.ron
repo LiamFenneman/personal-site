@@ -1,0 +1,137 @@
+(
+    education: [
+        (
+            what: "Bachelor of Engineering with Honours – Software Engineering",
+            where: "Victoria University of Wellington",
+            when: "2020 – 2023",
+        ),
+        (
+            what: "Star Program – Advancing in Mathematical Sciences",
+            where: "University of Canterbury",
+            when: "2019 (full year)",
+        ),
+        (
+            what: "NCEA Level 3 with Excellence Endorsement",
+            where: "Mount Maunganui College",
+            when: "2015 – 2019",
+        ),
+    ],
+    skills: [
+        (
+            title: "Languages",
+            list: [
+                "Rust",
+                "Nix",
+                "HTML",
+                "CSS",
+                "JavaScript",
+                "TypeScript",
+                "SQL",
+                "Java",
+                "C",
+                "C++",
+                "C#",
+                "Bash",
+                "Lua",
+                "Ruby",
+            ],
+        ),
+        (
+            title: "Frameworks / Tools",
+            list: [
+                "Git",
+                "HTMX",
+                "PostgreSQL",
+                "MySQL",
+                "Redis",
+                "Docker",
+                "NodeJS",
+                "ExpressJS",
+                "React",
+                "Unity Engine",
+            ],
+        ),
+        (
+            title: "Other Technology",
+            list: [
+                "Cloudflare",
+                "AWS",
+                "Proxmox",
+                "Linux",
+                "NixOS",
+            ],
+        ),
+    ],
+    projects: [
+        (
+            title: "Ipipiri Digital Trails: Augmented Reality Experience",
+            url: None,
+            list: [
+                "I worked with the Russell Museum to develop an augmented
+                reality application that allows users to explore the history of
+                Russell.",
+                "My contribution was the development of the augmented reality
+                elements and building the Android application.",
+                "Developed using: C#, Unity Engine, Android SDK.",
+            ],
+        ),
+        (
+            title: "Home Lab",
+            url: None,
+            list: [
+                "I maintain a small home lab with two servers for the purpose of
+                learning server technology.",
+                "I also use it to manage all my home networking, host internal
+                services, and create isolated development environments.",
+                "Technologies used: Proxmox, Docker.",
+            ],
+        ),
+        (
+            title: "Recipe Book",
+            url: None,
+            list: [
+                "Web application to manage recipes in the browser.",
+                "Integrates with the ChatGPT for automatically creating
+                recipes.",
+                "Developed using: Rust, Leptos, OpenAI API.",
+            ],
+        ),
+        (
+            title: "Wedding/Event Venue Website",
+            url: Some("https://web.archive.org/web/20220121215931/https://summerhouseweddings.co.nz/"),
+            list: [
+                "Website for a weddings and events venue. It was a full-stack
+                application that used basic HTML and CSS for the front-end and
+                PHP and MySQL for the back-end.",
+                "Implemented a basic content management system that allowed the
+                content of the website to be changed without requiring changes
+                to the code.",
+                "Developed using: PHP, HTML, CSS, SQL.",
+            ],
+        ),
+    ],
+    experience: [
+        (
+            where: "McDonald's",
+            role: "Crew Member",
+            location: "Wellington, NZ",
+            when: "2021 – 2022 (4 months)",
+            list: [
+                "My role was to work the kitchen half of the restaurant.",
+                "This involved being apart in a team to cook and complete 30+ orders per hour.",
+            ],
+        ),
+        (
+            where: "Summer House Weddings & Events",
+            role: "Various Roles",
+            location: "Tauranga, NZ",
+            when: "2015 – 2019",
+            list: [
+                "I developed and managed the website for Summer House Weddings &
+                Events.",
+                "During an event I also worked as security and parking. For some
+                events I worked tending the bar.",
+            ],
+        ),
+    ]
+)
