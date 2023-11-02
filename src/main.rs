@@ -48,17 +48,15 @@ async fn main() -> anyhow::Result<()> {
         .unwrap_or(3000);
     let addr = std::net::SocketAddr::from((host, port));
 
-    // get public path from `./public`
-    let public_path = std::env::current_dir()?.join("public");
-
-    info!("router initialized, now listening on port {}", port);
-
     let router = Router::new()
         .merge(home::router())
         .nest("/resume", resume::router())
         .nest("/projects", projects::router())
         .nest("/wishlist", wishlist::router())
-        .fallback_service(ServeDir::new(public_path))
+        .fallback_service(ServeDir::new(
+            // serve all files from `./public` directory
+            std::env::current_dir()?.join("public"),
+        ))
         .layer(
             // add tracing and compression to all routes
             ServiceBuilder::new()
@@ -68,6 +66,8 @@ async fn main() -> anyhow::Result<()> {
         // set the vary header to (at-least) accept-encoding
         .layer(map_response(set_vary_header))
         .layer(caching::CacheLayer::default());
+
+    info!("router initialized, now listening on port {}", port);
 
     axum::Server::bind(&addr)
         .serve(router.into_make_service())
