@@ -5,6 +5,9 @@ description: >-
   sint consectetur cupidatat.
 created_at: 2023-10-29
 updated_at: 2023-10-29
+links:
+  Hello: https://google.com
+  Example: https://example.com
 ---
 
 # Example 2

@@ -13,7 +13,7 @@
     @apply text-lg;
   }
   .md-lite h1 {
-    @apply text-lg font-semibold;
+    @apply text-xl font-semibold;
   }
   .md-lite h2 {
     @apply text-lg;

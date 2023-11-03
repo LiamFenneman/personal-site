@@ -1,6 +1,6 @@
 use anyhow::Context;
 use askama::Template;
-use axum::{response::IntoResponse, routing::get, Router};
+use axum::{routing::get, Router};
 
 const RESUME_FILE: &str = "posts/resume.ron";
 
@@ -43,7 +43,7 @@ struct Experience {
 }
 
 #[instrument]
-async fn get_resume() -> crate::error::Result<impl IntoResponse> {
+async fn get_resume() -> crate::error::Result<ResumePage> {
     let file = std::fs::read_to_string(RESUME_FILE)
         .context("could not open RON file: posts/resume.ron")?;
 

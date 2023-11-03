@@ -87,6 +87,9 @@ async fn main() -> anyhow::Result<()> {
 ///
 /// Source:
 /// - https://developer.mozilla.org/en-US/docs/Web/HTTP/Compression#end-to-end_compression
+///
+/// **NOTE:** this is being added to the `CompressionLayer` in a PR:
+/// - https://github.com/tower-rs/tower-http/pull/399
 async fn set_vary_header(mut response: Response) -> Response {
     // TODO: support appending to the end of the existing Vary header
     response

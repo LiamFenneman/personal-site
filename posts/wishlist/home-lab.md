@@ -1,11 +1,7 @@
 ---
-name: Home Lab
-description: >-
-  TODO
-created_at: 2023-10-30
+name: Home Lab (2.0)
+created_at: 2023-11-03
 ---
-
-## Overview
 
 Lorem ipsum dolor sit amet, officia excepteur ex fugiat reprehenderit enim
 labore culpa sint ad nisi Lorem pariatur mollit ex esse exercitation amet. Nisi
