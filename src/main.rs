@@ -1,12 +1,15 @@
 #![feature(async_closure)]
 
 use anyhow::Context;
+use askama::Template;
 use axum::{
     http::header, middleware::map_response, response::Response, Router,
 };
 use tower::ServiceBuilder;
 use tower_http::{
-    compression::CompressionLayer, services::ServeDir, trace::TraceLayer,
+    compression::CompressionLayer,
+    services::{ServeDir, ServeFile},
+    trace::TraceLayer,
 };
 use tracing::info;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
@@ -54,10 +57,15 @@ async fn main() -> anyhow::Result<()> {
         .nest("/resume", resume::router())
         .nest("/projects", projects::router())
         .nest("/wishlist", wishlist::router())
-        .fallback_service(ServeDir::new(
-            // serve all files from `./public` directory
-            std::env::current_dir()?.join("public"),
-        ))
+        // serve all files from `./public` directory
+        .nest_service(
+            "/public",
+            ServeDir::new(std::env::current_dir()?.join("public")),
+        )
+        // serve the favicon separately since browsers expect it to be located
+        // at a specific URL
+        .route_service("/favicon.ico", ServeFile::new("public/favicon.ico"))
+        .fallback(async || NotFoundPage)
         .layer(
             // add tracing and compression to all routes
             ServiceBuilder::new()
@@ -97,3 +105,7 @@ async fn set_vary_header(mut response: Response) -> Response {
         .insert(header::VARY, header::ACCEPT_ENCODING.into());
     response
 }
+
+#[derive(Template)]
+#[template(path = "pages/404.html")]
+struct NotFoundPage;

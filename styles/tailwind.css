@@ -18,20 +18,25 @@
   .md-lite h2 {
     @apply text-lg;
   }
-  .md p, .md-lite p {
+  .md p,
+  .md-lite p {
     @apply text-justify;
   }
-  .md a, .md-lite a {
+  .md a,
+  .md-lite a {
     @apply text-dark-aqua hover:underline;
   }
-  .md blockquote, .md-lite blockquote {
+  .md blockquote,
+  .md-lite blockquote {
     @apply border-l-4 border-dark-fg0 pl-4 flex flex-col gap-1;
   }
-  .md ul, .md-lite ul {
+  .md ul,
+  .md-lite ul {
     @apply list-disc list-inside;
     /* TODO: nested lists */
   }
-  .md ol, .md-lite ol {
+  .md ol,
+  .md-lite ol {
     @apply list-decimal list-inside;
     /* TODO: nested lists */
   }
