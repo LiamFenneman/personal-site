@@ -2,6 +2,8 @@ use anyhow::Context;
 use askama::Template;
 use axum::{response::IntoResponse, routing::get, Router};
 
+const RESUME_FILE: &str = "posts/resume.ron";
+
 #[derive(Debug, Clone, Template, serde::Deserialize)]
 #[template(path = "pages/resume.html")]
 struct ResumePage {
@@ -40,12 +42,17 @@ struct Experience {
     list: Vec<String>,
 }
 
+#[instrument]
 async fn get_resume() -> crate::error::Result<impl IntoResponse> {
-    let file = std::fs::read_to_string("posts/resume.ron")
+    let file = std::fs::read_to_string(RESUME_FILE)
         .context("could not open RON file: posts/resume.ron")?;
 
+    trace!("open resume file: {RESUME_FILE}");
+
     let page = ron::from_str::<ResumePage>(&file)
-        .context("could not parse RON file: posts/resume.ron")?;
+        .context(format!("could not parse RON file: {}", RESUME_FILE))?;
+
+    trace!("parse resume file");
 
     Ok(page)
 }

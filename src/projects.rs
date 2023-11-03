@@ -2,7 +2,13 @@ use std::path::PathBuf;
 
 use anyhow::{bail, Context};
 use askama::Template;
-use axum::{extract::Path, routing::get, Router};
+use axum::http::StatusCode;
+use axum::{
+    extract::Path,
+    response::{IntoResponse, Response},
+    routing::get,
+    Router,
+};
 
 use crate::links::{Link, Links};
 use crate::posts::Post;
@@ -37,6 +43,7 @@ struct Frontmatter {
     links: Option<Links>,
 }
 
+#[instrument]
 async fn get_project_list() -> crate::error::Result<ProjectsPage> {
     // search `./posts/projects` directory for markdown files
     let projects = std::fs::read_dir("posts/projects")
@@ -45,13 +52,14 @@ async fn get_project_list() -> crate::error::Result<ProjectsPage> {
         .map(|res| res.path())
         .collect::<Vec<_>>();
 
+    debug!("found {} project files", projects.len());
+
     // read each file and parse into `Post`
     // return a project page with each project
     let mut projects = projects
         .iter()
         .map(|path| {
-            let Some(stem) = path.file_stem().and_then(|s| s.to_str())
-            else {
+            let Some(stem) = path.file_stem().and_then(|s| s.to_str()) else {
                 bail!("could not get file stem");
             };
             Ok((path, stem))
@@ -79,6 +87,8 @@ async fn get_project_list() -> crate::error::Result<ProjectsPage> {
         // collect into a Vec<_> and propagate Result errors
         .collect::<Result<Vec<_>, _>>()?;
 
+    debug!("{} projects parsed", projects.len());
+
     // TODO: sort by date: either created_at or updated_at whichever is more
     // recent
     projects.sort_by(|a, b| {
@@ -88,24 +98,41 @@ async fn get_project_list() -> crate::error::Result<ProjectsPage> {
     Ok(ProjectsPage { list: projects })
 }
 
-#[axum::debug_handler]
+#[instrument]
 async fn get_project_by_name(
     Path(file): Path<String>,
-) -> crate::error::Result<ProjectPage> {
+) -> crate::error::Result<Response> {
     // get the path to the project markdown file
     let path: PathBuf = format!("posts/projects/{}.md", file).into();
+
+    // if the file doesn't exist then return a 404
+    if !path.exists() {
+        info!("project file not found: {:?}", path);
+        return Ok(StatusCode::NOT_FOUND.into_response());
+    }
+
+    trace!("project file: {:?}", path);
+
     let mut project = Post::from_file_with_metadata(
         &path,
         Metadata {
             slug: format!("/projects/{file}"),
         },
     )
-    .context("failed to create post")?;
+    .context("failed to create project")?;
 
     // actually parse the content into HTML
     project.parse_content()?;
 
-    Ok(ProjectPage { project })
+    // make sure the content is HTML. this is a bit redundant since we just
+    // parsed the content into HTML, however, this check should remain so
+    // that the invariant doesn't get lost
+    assert!(
+        project.content.is_html(),
+        "project content must be HTML to render"
+    );
+
+    Ok(ProjectPage { project }.into_response())
 }
 
 pub fn router() -> Router {

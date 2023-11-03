@@ -25,7 +25,6 @@ where
 impl IntoResponse for AppError {
     fn into_response(self) -> Response {
         // TODO: when in production don't return any message
-        // TODO: log error? not sure if this is the right place for it
         (
             StatusCode::INTERNAL_SERVER_ERROR,
             format!("Something went wrong: {:?}", self.0),

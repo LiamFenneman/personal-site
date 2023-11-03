@@ -7,7 +7,6 @@ use axum::{
 };
 use futures_util::future::BoxFuture;
 use tower::{Layer, Service};
-use tracing::debug;
 
 #[derive(Debug, Clone, Default)]
 pub struct CacheLayer {
@@ -90,6 +89,7 @@ where
         self.inner.poll_ready(cx)
     }
 
+    #[instrument(skip_all)]
     fn call(&mut self, request: Request<Body>) -> Self::Future {
         let future = self.inner.call(request);
 
@@ -117,6 +117,7 @@ where
 
             format!("{}{}{}", publicity, core, immutable)
         };
+        trace!("cache-control header created: {}", cache_control);
 
         Box::pin(async move {
             let mut response: Response = future.await?;

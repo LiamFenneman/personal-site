@@ -28,10 +28,32 @@ pub struct Post<Frontmatter, Metadata> {
     pub metadata: Metadata,
 }
 
+/// The content of a post.
+///
+/// Posts are written in markdown and therefore are initially parsed as
+/// `Markdown`. To parse the content into HTML use the `parse_content` method.
 #[derive(Debug, Clone)]
 pub enum Content {
     Markdown(String),
     Html(String),
+}
+
+impl Content {
+    /// Check if the content is Markdown.
+    pub fn is_markdown(&self) -> bool {
+        match self {
+            Content::Markdown(_) => true,
+            Content::Html(_) => false,
+        }
+    }
+
+    /// Check if the content is HTML.
+    pub fn is_html(&self) -> bool {
+        match self {
+            Content::Markdown(_) => false,
+            Content::Html(_) => true,
+        }
+    }
 }
 
 impl Display for Content {
@@ -49,6 +71,7 @@ where
     Frontmatter: serde::de::DeserializeOwned,
 {
     /// Create a new post from a file path.
+    #[instrument]
     pub fn from_file(path: &Path) -> anyhow::Result<Self> {
         Self::from_file_with_metadata(path, ())
     }
@@ -59,13 +82,16 @@ where
     Frontmatter: serde::de::DeserializeOwned,
 {
     /// Create a new post from a file path and metadata.
+    #[instrument(skip(metadata))]
     pub fn from_file_with_metadata(
         path: &Path,
         metadata: Metadata,
     ) -> anyhow::Result<Self> {
         let file = std::fs::read_to_string(path)?;
+        trace!("open file {:?}", path);
+
         let frontmatter = parse_frontmatter(&file)?;
-        // let content = parse_content(&file)?;
+        trace!("parse frontmatter");
 
         Ok(Post {
             frontmatter,
@@ -94,6 +120,7 @@ where
 /// Parse the frontmatter from the given file.
 ///
 /// The frontmatter is the first `Yaml` node within a `Root` node.
+#[instrument(skip(file))]
 fn parse_frontmatter<Frontmatter>(file: &str) -> anyhow::Result<Frontmatter>
 where
     Frontmatter: serde::de::DeserializeOwned,
@@ -134,6 +161,8 @@ fn parse_content(file: &str) -> anyhow::Result<String> {
         bail!("could not parse markdown file");
     };
 
+    trace!("parse markdown file into HTML successfully");
+
     // ensure that all links open in a new tab and don't use HTMX
     let content = content
         .replace("<a href=", "<a hx-boost=\"false\" target=\"_blank\" href=");
@@ -160,6 +189,8 @@ fn full_options() -> Options {
     }
 }
 
+// Manually implement `Debug` since `Frontmatter` and `Metadata` are generic and
+// we don't want to force them to implement `Debug`.
 impl<F: Debug, M: Debug> Debug for Post<F, M> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("Post")
@@ -170,6 +201,8 @@ impl<F: Debug, M: Debug> Debug for Post<F, M> {
     }
 }
 
+// Manually implement `Clone` since `Frontmatter` and `Metadata` are generic and
+// we don't want to force them to implement `Clone`.
 impl<F: Clone, M: Clone> Clone for Post<F, M> {
     fn clone(&self) -> Self {
         Post {

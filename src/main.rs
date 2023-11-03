@@ -2,9 +2,7 @@
 
 use anyhow::Context;
 use axum::{
-    http::{header, Response},
-    middleware::map_response,
-    Router,
+    http::header, middleware::map_response, response::Response, Router,
 };
 use tower::ServiceBuilder;
 use tower_http::{
@@ -12,6 +10,9 @@ use tower_http::{
 };
 use tracing::info;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
+
+#[macro_use]
+extern crate tracing;
 
 pub use error::AppError;
 
@@ -30,7 +31,7 @@ async fn main() -> anyhow::Result<()> {
         .with(
             tracing_subscriber::EnvFilter::try_from_default_env()
                 .unwrap_or_else(|_| {
-                    "warn,tower_http=trace,personal_site=debug".into()
+                    "warn,tower_http=trace,personal_site=trace".into()
                 }),
         )
         .with(tracing_subscriber::fmt::layer())
@@ -86,9 +87,10 @@ async fn main() -> anyhow::Result<()> {
 ///
 /// Source:
 /// - https://developer.mozilla.org/en-US/docs/Web/HTTP/Compression#end-to-end_compression
-async fn set_vary_header<T>(mut response: Response<T>) -> Response<T> {
+async fn set_vary_header(mut response: Response) -> Response {
+    // TODO: support appending to the end of the existing Vary header
     response
         .headers_mut()
-        .append(header::VARY, header::ACCEPT_ENCODING.into());
+        .insert(header::VARY, header::ACCEPT_ENCODING.into());
     response
 }

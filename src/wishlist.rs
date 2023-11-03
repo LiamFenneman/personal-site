@@ -1,6 +1,10 @@
 use anyhow::{bail, Context};
 use askama::Template;
-use axum::{routing::get, Router};
+use axum::{
+    response::{IntoResponse, Response},
+    routing::get,
+    Router,
+};
 
 use crate::posts::Post;
 
@@ -17,13 +21,24 @@ struct Frontmatter {
     updated_at: Option<String>,
 }
 
-async fn get_wishlist() -> crate::error::Result<WishlistPage> {
+#[instrument]
+async fn get_wishlist() -> crate::error::Result<Response> {
     // search `./posts/wishlist` directory for markdown files
     let list = std::fs::read_dir("posts/wishlist")
         .context("could not read the `posts/wishlist` directory")?
-        .filter_map(|res| res.ok()) // filter out errors (TODO: log this)
+        .filter_map(|res| {
+            // filter out and log errors
+            if let Err(e) = res {
+                warn!("could not read file: {}", e);
+                return None;
+            }
+
+            res.ok()
+        })
         .map(|res| res.path())
         .collect::<Vec<_>>();
+
+    debug!("found {} wishlist project files", list.len());
 
     // read each file and parse into a `Post`
     let mut list = list
@@ -50,18 +65,29 @@ async fn get_wishlist() -> crate::error::Result<WishlistPage> {
         // collect into a Vec<_> and propagate Result errors
         .collect::<Result<Vec<_>, _>>()?;
 
+    debug!("{} wishlist projects parsed", list.len());
+
     // TODO: sort by date: either created_at or updated_at whichever is more
     // recent
     list.sort_by(|a, b| {
         b.frontmatter.created_at.cmp(&a.frontmatter.created_at)
     });
 
+    // parse the content into HTML for each post
     for post in list.iter_mut() {
         post.parse_content()
             .context("failed to parse wishlist post")?;
     }
 
-    Ok(WishlistPage { list })
+    // make sure the content is HTML. this is a bit redundant since we just
+    // parsed the content into HTML, however, this check should remain so
+    // that the invariant doesn't get lost
+    assert!(
+        list.iter().all(|p| p.content.is_html()),
+        "all wishlist files must be parsed into HTML before render"
+    );
+
+    Ok(WishlistPage { list }.into_response())
 }
 
 pub fn router() -> Router {
